@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Сайт фотографа{% endblock %}</title>
+
+    <!-- Простой CSS фреймворк -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+
+    <style>
+        /* Простые стили для новичка */
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .menu {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .menu a {
+            margin-right: 20px;
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .menu a:hover {
+            color: #e74c3c;
+        }
+
+        .photo-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .photo-card img {
+            width: 100%;
+            border-radius: 4px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .price {
+            color: #e74c3c;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .button {
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .button:hover {
+            background: #2980b9;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .footer {
+            background: #34495e;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка сайта -->
+    <div class="header">
+        <h1>📷 Фотограф Алексей</h1>
+        <p>Профессиональная фотосъемка в Москве</p>
+    </div>
+
+    <!-- Меню -->
+    <div class="menu">
+        <a href="{% url 'home' %}">Главная</a>
+        <a href="{% url 'services' %}">Услуги и цены</a>
+        <a href="#contact">Контакты</a>
+    </div>
+
+    <!-- Основное содержимое -->
+    <div class="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Подвал -->
+    <div class="footer">
+        <p>© 2024 Фотограф Алексей. Телефон: +7 (999) 123-45-67</p>
+    </div>
+</body>
+</html>

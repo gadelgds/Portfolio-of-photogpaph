@@ -1,0 +1,28 @@
+{% extends 'game/base.html' %}
+
+{% block content %}
+<h2>Мое портфолио</h2>
+<p>Посмотрите примеры моих работ</p>
+
+<div class="gallery">
+    {% for photo in photos %}
+    <div class="photo-card">
+        <a href="{% url 'photo_detail' photo.id %}">
+            <img src="{{ photo.preview.url|default:photo.image.url }}" alt="{{ photo.title }}">
+        </a>
+        <h3>{{ photo.title }}</h3>
+        <a href="{% url 'photo_detail' photo.id %}" class="button">Посмотреть</a>
+    </div>
+    {% endfor %}
+</div>
+
+<div style="background: #e8f4f8; padding: 20px; border-radius: 8px; margin-top: 30px;">
+    <h3>💡 Почему выбирают меня?</h3>
+    <ul>
+        <li>Более 5 лет опыта</li>
+        <li>Современное оборудование</li>
+        <li>Доступные цены</li>
+        <li>Быстрая обработка фото</li>
+    </ul>
+</div>
+{% endblock %}

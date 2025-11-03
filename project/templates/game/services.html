@@ -1,0 +1,27 @@
+{% extends 'game/base.html' %}
+
+{% block content %}
+<h2>💼 Мои услуги</h2>
+<p>Выберите подходящий вариант съемки</p>
+
+{% for service in services %}
+<div class="service-card">
+    <h3>{{ service.name }}</h3>
+    <p>{{ service.description }}</p>
+    <div class="price">{{ service.price }} руб.</div>
+    <button class="button" onclick="alert('Для заказа звоните: +7 (999) 123-45-67')">
+        Заказать услугу
+    </button>
+</div>
+{% endfor %}
+
+<div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin-top: 30px;">
+    <h3>📞 Как заказать съемку?</h3>
+    <ol>
+        <li>Позвоните мне по телефону: <strong>+7 (999) 123-45-67</strong></li>
+        <li>Обсудим детали и договоримся о дате</li>
+        <li>Встретимся на съемке</li>
+        <li>Вы получите готовые фото через 3-5 дней</li>
+    </ol>
+</div>
+{% endblock %}
