@@ -1,0 +1,12 @@
+{% extends 'game/base.html' %}
+
+{% block content %}
+<h1>Галерея</h1>
+<div class="photo-grid">
+    {% for photo in photos %}
+        <a href="{% url 'photo_detail' photo.id %}">
+            <img src="{{ photo.preview.url|default:photo.image.url }}" alt="{{ photo.title }}">
+        </a>
+    {% endfor %}
+</div>
+{% endblock %}
