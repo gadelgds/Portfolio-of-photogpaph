@@ -1,0 +1,213 @@
+{% extends 'game/base.html' %}
+
+{% block title %}Отзывы клиентов{% endblock %}
+
+{% block content %}
+<style>
+    /* Стили для страницы отзывов */
+    .review-section {
+        background: white;
+        border-radius: 8px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .review-card {
+        background: #f8f9fa;
+        border-left: 4px solid #3498db;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+    }
+    
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    
+    .review-author {
+        font-weight: bold;
+        color: #2c3e50;
+        font-size: 18px;
+    }
+    
+    .review-rating {
+        color: #f39c12;
+        font-size: 20px;
+    }
+    
+    .review-text {
+        color: #555;
+        line-height: 1.6;
+        margin: 10px 0;
+    }
+    
+    .review-date {
+        color: #999;
+        font-size: 14px;
+    }
+    
+    .form-section {
+        background: white;
+        border-radius: 8px;
+        padding: 30px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+        box-sizing: border-box;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #3498db;
+    }
+    
+    .btn-submit {
+        background: #27ae60;
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    
+    .btn-submit:hover {
+        background: #229954;
+    }
+    
+    .alert {
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+    
+    .alert-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .no-reviews {
+        text-align: center;
+        color: #999;
+        padding: 40px;
+        font-style: italic;
+    }
+</style>
+
+<h1>💬 Отзывы наших клиентов</h1>
+
+<!-- Сообщения (например, после отправки формы) -->
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<!-- Раздел с отзывами -->
+<div class="review-section">
+    <h2>Что говорят наши клиенты</h2>
+    
+    {% if reviews %}
+        {% for review in reviews %}
+            <div class="review-card">
+                <div class="review-header">
+                    <span class="review-author">{{ review.author_name }}</span>
+                    <span class="review-rating">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= review.rating %}
+                                ⭐
+                            {% else %}
+                                ☆
+                            {% endif %}
+                        {% endfor %}
+                    </span>
+                </div>
+                <div class="review-text">
+                    {{ review.text }}
+                </div>
+                <div class="review-date">
+                    {{ review.created_at|date:"d.m.Y в H:i" }}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-reviews">
+            Пока нет отзывов. Будьте первым!
+        </div>
+    {% endif %}
+</div>
+
+<!-- Форма для добавления отзыва -->
+<div class="form-section">
+    <h2>Оставьте свой отзыв</h2>
+    <p>Мы будем рады узнать ваше мнение о нашей работе!</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="{{ form.author_name.id_for_label }}">{{ form.author_name.label }}</label>
+            {{ form.author_name }}
+            {% if form.author_name.errors %}
+                <span style="color: red;">{{ form.author_name.errors }}</span>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <span style="color: red;">{{ form.email.errors }}</span>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.rating.id_for_label }}">{{ form.rating.label }}</label>
+            {{ form.rating }}
+            {% if form.rating.errors %}
+                <span style="color: red;">{{ form.rating.errors }}</span>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.text.id_for_label }}">{{ form.text.label }}</label>
+            {{ form.text }}
+            {% if form.text.errors %}
+                <span style="color: red;">{{ form.text.errors }}</span>
+            {% endif %}
+        </div>
+        
+        <button type="submit" class="btn-submit">Отправить отзыв</button>
+    </form>
+    
+    <p style="margin-top: 15px; color: #999; font-size: 14px;">
+        * Ваш отзыв появится на сайте после проверки модератором
+    </p>
+</div>
+
+{% endblock %}
