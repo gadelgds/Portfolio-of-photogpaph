@@ -1,4 +1,28 @@
 from django.db import models
+
+class Category(models.Model):
+    """Категории для фотографий (портрет, пейзаж, свадьба и т.д.)"""
+    name = models.CharField(max_length=100, verbose_name='Название')
+    slug = models.SlugField(unique=True, verbose_name='URL')
+    
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+    
+    def __str__(self):
+        return self.name
+
+class Tag(models.Model):
+    """Теги для фотографий"""
+    name = models.CharField(max_length=50, verbose_name='Название')
+    
+    class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
+    
+    def __str__(self):
+        return self.name
+
 class Photo(models.Model):
     title = models.CharField(max_length=200)
     image = models.ImageField(upload_to='photos/')
@@ -6,6 +30,8 @@ class Photo(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
     likes = models.IntegerField(default=0, verbose_name='Лайки')  # Количество лайков
     views = models.IntegerField(default=0, verbose_name='Просмотры')  # Количество просмотров
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='photos', verbose_name='Категория')
+    tags = models.ManyToManyField(Tag, blank=True, related_name='photos', verbose_name='Теги')
 
 class Service(models.Model):
     name = models.CharField(max_length=200)
@@ -14,6 +40,9 @@ class Service(models.Model):
 
 class Review(models.Model):
     """Модель для хранения отзывов пользователей"""
+    # Связь с фотографией (опционально - может быть общий отзыв о работе)
+    photo = models.ForeignKey(Photo, on_delete=models.CASCADE, related_name='reviews', null=True, blank=True, verbose_name='Фотография')
+    
     # Имя автора отзыва
     author_name = models.CharField(max_length=100, verbose_name='Имя')
     
@@ -42,4 +71,18 @@ class Review(models.Model):
     
     def __str__(self):
         return f'Отзыв от {self.author_name} - {self.rating}★'
+
+class PhotoLike(models.Model):
+    """Модель для отслеживания лайков и предотвращения накрутки"""
+    photo = models.ForeignKey(Photo, on_delete=models.CASCADE, related_name='photo_likes', verbose_name='Фотография')
+    ip_address = models.GenericIPAddressField(verbose_name='IP адрес')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата')
+    
+    class Meta:
+        unique_together = ['photo', 'ip_address']  # Один IP = один лайк на фото
+        verbose_name = 'Лайк'
+        verbose_name_plural = 'Лайки'
+    
+    def __str__(self):
+        return f'Лайк от {self.ip_address} для {self.photo.title}'
 # Create your models here.

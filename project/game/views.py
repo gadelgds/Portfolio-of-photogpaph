@@ -1,12 +1,31 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-from .models import Photo, Service, Review
+from django.db import IntegrityError
+from .models import Photo, Service, Review, PhotoLike, Category
 from .forms import ReviewForm
 
 def home(request):
-    # Сортируем фотографии по количеству просмотров (от большего к меньшему)
-    photos = Photo.objects.all().order_by('-views')
-    return render(request, 'game/home.html', {'photos': photos})
+    # Получаем все категории для фильтра
+    categories = Category.objects.all()
+    
+    # Проверяем, выбрана ли категория
+    category_slug = request.GET.get('category')
+    
+    if category_slug:
+        # Фильтруем по категории
+        photos = Photo.objects.filter(category__slug=category_slug).order_by('-views')
+        selected_category = Category.objects.get(slug=category_slug)
+    else:
+        # Показываем все фотографии
+        photos = Photo.objects.all().order_by('-views')
+        selected_category = None
+    
+    context = {
+        'photos': photos,
+        'categories': categories,
+        'selected_category': selected_category
+    }
+    return render(request, 'game/home.html', context)
 
 def photo_detail(request, photo_id):
     photo = get_object_or_404(Photo, id=photo_id)
@@ -15,7 +34,36 @@ def photo_detail(request, photo_id):
     photo.views += 1
     photo.save()
     
-    return render(request, 'game/photo_detail.html', {'photo': photo})
+    # Получаем одобренные отзывы для этой фотографии
+    photo_reviews = photo.reviews.filter(is_approved=True)
+    
+    # Обработка формы комментария
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            # Сохраняем отзыв, но не сразу в БД
+            review = form.save(commit=False)
+            # Привязываем отзыв к этой фотографии
+            review.photo = photo
+            # По умолчанию отзыв не одобрен (нужна модерация)
+            review.is_approved = False
+            review.save()
+            
+            # Показываем сообщение пользователю
+            messages.success(request, '💬 Спасибо за комментарий! Он появится после модерации.')
+            
+            # Перенаправляем на эту же страницу (чтобы форма очистилась)
+            return redirect('photo_detail', photo_id=photo_id)
+    else:
+        # Если GET запрос - просто показываем пустую форму
+        form = ReviewForm()
+    
+    context = {
+        'photo': photo,
+        'photo_reviews': photo_reviews,
+        'form': form
+    }
+    return render(request, 'game/photo_detail.html', context)
 
 def services(request):
     services = Service.objects.all()
@@ -63,13 +111,34 @@ def contact(request):
 
 def like_photo(request, photo_id):
     """
-    Обработка лайка фотографии
+    Обработка лайка фотографии с защитой от накрутки
     """
     photo = get_object_or_404(Photo, id=photo_id)
     
-    # Увеличиваем счетчик лайков
-    photo.likes += 1
-    photo.save()
+    # Получаем IP адрес пользователя
+    ip_address = get_client_ip(request)
+    
+    try:
+        # Пытаемся создать запись о лайке
+        PhotoLike.objects.create(photo=photo, ip_address=ip_address)
+        
+        # Увеличиваем счетчик лайков
+        photo.likes += 1
+        photo.save()
+        
+        messages.success(request, '❤️ Спасибо за лайк!')
+    except IntegrityError:
+        # Если этот IP уже лайкал эту фотографию
+        messages.warning(request, 'Вы уже поставили лайк этой фотографии!')
     
     # Перенаправляем обратно на страницу фотографии
     return redirect('photo_detail', photo_id=photo_id)
+
+def get_client_ip(request):
+    """Получение IP адреса клиента"""
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip

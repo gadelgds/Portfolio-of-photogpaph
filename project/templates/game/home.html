@@ -4,6 +4,17 @@
 <h2>Галерея моих работ</h2>
 <p>Посмотрите примеры моих работ</p>
 
+<!-- Фильтр по категориям -->
+{% if categories %}
+<div style="margin: 20px 0; padding: 15px; background: #f5f5f5; border-radius: 8px;">
+    <strong>Категории:</strong>
+    <a href="{% url 'home' %}" class="button" style="{% if not selected_category %}background: #2c3e50;{% else %}background: #95a5a6;{% endif %} margin: 5px;">Все</a>
+    {% for category in categories %}
+    <a href="?category={{ category.slug }}" class="button" style="{% if selected_category == category %}background: #2c3e50;{% else %}background: #95a5a6;{% endif %} margin: 5px;">{{ category.name }}</a>
+    {% endfor %}
+</div>
+{% endif %}
+
 <div class="gallery">
     {% for photo in photos %}
     <div class="photo-card">
@@ -11,6 +22,21 @@
             <img src="{{ photo.preview.url|default:photo.image.url }}" alt="{{ photo.title }}">
         </a>
         <h3>{{ photo.title }}</h3>
+        
+        {% if photo.category %}
+        <div style="color: #3498db; font-size: 12px; margin: 5px 0;">
+            📁 {{ photo.category.name }}
+        </div>
+        {% endif %}
+        
+        {% if photo.tags.all %}
+        <div style="font-size: 12px; margin: 5px 0;">
+            {% for tag in photo.tags.all %}
+            <span style="background: #ecf0f1; padding: 2px 8px; border-radius: 3px; margin: 2px; display: inline-block;">🏷️ {{ tag.name }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
         <div style="color: #666; font-size: 14px; margin: 10px 0;">
             ❤️ {{ photo.likes }} | 👁️ {{ photo.views }}
         </div>
