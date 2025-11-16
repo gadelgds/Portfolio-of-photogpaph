@@ -48,3 +48,9 @@ def reviews(request):
         'form': form
     }
     return render(request, 'game/reviews.html', context)
+
+def contact(request):
+    """
+    Страница контактов
+    """
+    return render(request, 'game/contact.html')
