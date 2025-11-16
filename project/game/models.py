@@ -4,6 +4,8 @@ class Photo(models.Model):
     image = models.ImageField(upload_to='photos/')
     preview = models.ImageField(upload_to='previews/', blank=True)  # Опционально
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    likes = models.IntegerField(default=0, verbose_name='Лайки')  # Количество лайков
+    views = models.IntegerField(default=0, verbose_name='Просмотры')  # Количество просмотров
 
 class Service(models.Model):
     name = models.CharField(max_length=200)

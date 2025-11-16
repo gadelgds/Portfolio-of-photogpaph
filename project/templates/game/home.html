@@ -11,6 +11,9 @@
             <img src="{{ photo.preview.url|default:photo.image.url }}" alt="{{ photo.title }}">
         </a>
         <h3>{{ photo.title }}</h3>
+        <div style="color: #666; font-size: 14px; margin: 10px 0;">
+            ❤️ {{ photo.likes }} | 👁️ {{ photo.views }}
+        </div>
         <a href="{% url 'photo_detail' photo.id %}" class="button">Посмотреть</a>
     </div>
     {% endfor %}

@@ -4,11 +4,17 @@ from .models import Photo, Service, Review
 from .forms import ReviewForm
 
 def home(request):
-    photos = Photo.objects.all()
+    # Сортируем фотографии по количеству просмотров (от большего к меньшему)
+    photos = Photo.objects.all().order_by('-views')
     return render(request, 'game/home.html', {'photos': photos})
 
 def photo_detail(request, photo_id):
     photo = get_object_or_404(Photo, id=photo_id)
+    
+    # Увеличиваем счетчик просмотров при каждом открытии страницы
+    photo.views += 1
+    photo.save()
+    
     return render(request, 'game/photo_detail.html', {'photo': photo})
 
 def services(request):
@@ -54,3 +60,16 @@ def contact(request):
     Страница контактов
     """
     return render(request, 'game/contact.html')
+
+def like_photo(request, photo_id):
+    """
+    Обработка лайка фотографии
+    """
+    photo = get_object_or_404(Photo, id=photo_id)
+    
+    # Увеличиваем счетчик лайков
+    photo.likes += 1
+    photo.save()
+    
+    # Перенаправляем обратно на страницу фотографии
+    return redirect('photo_detail', photo_id=photo_id)

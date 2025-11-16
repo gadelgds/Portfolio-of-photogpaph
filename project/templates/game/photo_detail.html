@@ -2,7 +2,25 @@
 
 {% block content %}
 <h1>{{ photo.title }}</h1>
-<img src="{{ photo.image.url }}" alt="{{ photo.title }}" style="max-width: 100%">
-<br>
-<a href="{% url 'home' %}">Назад к галерее</a>
+<img src="{{ photo.image.url }}" alt="{{ photo.title }}" style="max-width: 100%; border-radius: 8px;">
+
+<div style="margin: 20px 0; padding: 15px; background: #f5f5f5; border-radius: 8px;">
+    <div style="display: flex; gap: 20px; align-items: center;">
+        <div style="font-size: 18px;">
+            ❤️ <strong>{{ photo.likes }}</strong> лайков
+        </div>
+        <div style="font-size: 18px;">
+            👁️ <strong>{{ photo.views }}</strong> просмотров
+        </div>
+    </div>
+    
+    <form method="post" action="{% url 'like_photo' photo.id %}" style="margin-top: 15px;">
+        {% csrf_token %}
+        <button type="submit" class="button" style="background: #ff4757; color: white;">
+            ❤️ Поставить лайк
+        </button>
+    </form>
+</div>
+
+<a href="{% url 'home' %}" class="button">Назад к галерее</a>
 {% endblock %}

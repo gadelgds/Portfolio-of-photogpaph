@@ -1,8 +1,16 @@
 from django.contrib import admin
 from .models import Photo, Service, Review
 
-# Регистрация Photo и Service
-admin.site.register(Photo)
+# Расширенная регистрация Photo
+@admin.register(Photo)
+class PhotoAdmin(admin.ModelAdmin):
+    """Настройка отображения фотографий в админ-панели"""
+    list_display = ['title', 'likes', 'views', 'uploaded_at']
+    list_filter = ['uploaded_at']
+    search_fields = ['title']
+    readonly_fields = ['likes', 'views', 'uploaded_at']
+
+# Регистрация Service
 admin.site.register(Service)
 
 # Расширенная регистрация Review с дополнительными возможностями
