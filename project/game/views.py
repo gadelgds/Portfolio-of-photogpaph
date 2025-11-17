@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.db import IntegrityError
-from .models import Photo, Service, Review, PhotoLike, Category
-from .forms import ReviewForm
+from .models import Photo, Service, Review, PhotoLike, Category, Order
+from .forms import ReviewForm, OrderForm
 
 def home(request):
     # Получаем все категории для фильтра
@@ -142,3 +142,35 @@ def get_client_ip(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
+def create_order(request, service_id):
+    """
+    Создание заказа на услугу
+    """
+    service = get_object_or_404(Service, id=service_id)
+    
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            # Сохраняем заказ, но не сразу в БД
+            order = form.save(commit=False)
+            # Привязываем к услуге
+            order.service = service
+            # Устанавливаем сумму из цены услуги
+            order.total_amount = service.price
+            order.save()
+            
+            # Показываем сообщение пользователю
+            messages.success(request, f'✅ Заказ #{order.id} успешно создан! Мы свяжемся с вами в ближайшее время.')
+            
+            # Перенаправляем на страницу услуг
+            return redirect('services')
+    else:
+        # Если GET запрос - просто показываем пустую форму
+        form = OrderForm()
+    
+    context = {
+        'form': form,
+        'service': service
+    }
+    return render(request, 'game/create_order.html', context)

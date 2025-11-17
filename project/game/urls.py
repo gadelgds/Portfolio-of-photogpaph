@@ -8,4 +8,5 @@ urlpatterns = [
     path('services/', views.services, name='services'),
     path('reviews/', views.reviews, name='reviews'),  # Новый маршрут для отзывов
     path('contact/', views.contact, name='contact'),  # Маршрут для контактов
+    path('order/<int:service_id>/', views.create_order, name='create_order'),  # Маршрут для создания заказа
 ]

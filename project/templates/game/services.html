@@ -4,23 +4,34 @@
 <h2>💼 Мои услуги</h2>
 <p>Выберите подходящий вариант съемки</p>
 
+{% if messages %}
+<div style="margin: 20px 0;">
+    {% for message in messages %}
+    <div style="padding: 15px; background: {% if message.tags == 'success' %}#d4edda{% else %}#fff3cd{% endif %}; border-radius: 5px; margin: 10px 0; border-left: 4px solid {% if message.tags == 'success' %}#28a745{% else %}#ffc107{% endif %};">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
 {% for service in services %}
 <div class="service-card">
     <h3>{{ service.name }}</h3>
     <p>{{ service.description }}</p>
     <div class="price">{{ service.price }} руб.</div>
-    <button class="button" onclick="alert('Для заказа звоните: +7 (999) 123-45-67')">
-        Заказать услугу
-    </button>
+    <a href="{% url 'create_order' service.id %}" class="button" style="display: inline-block; text-decoration: none;">
+        📅 Заказать услугу
+    </a>
 </div>
 {% endfor %}
 
-<div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin-top: 30px;">
-    <h3>📞 Как заказать съемку?</h3>
+<div style="background: #e8f4f8; padding: 20px; border-radius: 8px; margin-top: 30px;">
+    <h3>📞 Как работает заказ?</h3>
     <ol>
-        <li>Позвоните мне по телефону: <strong>+7 (999) 123-45-67</strong></li>
-        <li>Дъякую</li>
-        <li>Встретимся на съемке</li>
+        <li>Нажмите кнопку "Заказать услугу" возле нужной услуги</li>
+        <li>Заполните форму с вашими контактами и желаемой датой</li>
+        <li>Я свяжусь с вами для подтверждения деталей</li>
+        <li>Встретимся на съемке в назначенное время</li>
         <li>Вы получите готовые фото через 3-5 дней</li>
     </ol>
 </div>

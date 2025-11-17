@@ -85,4 +85,42 @@ class PhotoLike(models.Model):
     
     def __str__(self):
         return f'Лайк от {self.ip_address} для {self.photo.title}'
+
+class Order(models.Model):
+    """Модель для заказов услуг фотографа"""
+    
+    # Статусы заказа
+    STATUS_CHOICES = [
+        ('new', 'Новый'),
+        ('confirmed', 'Подтвержден'),
+        ('completed', 'Выполнен'),
+        ('cancelled', 'Отменен'),
+    ]
+    
+    # Информация о клиенте
+    client_name = models.CharField(max_length=100, verbose_name='Имя клиента')
+    client_email = models.EmailField(verbose_name='Email клиента')
+    client_phone = models.CharField(max_length=20, verbose_name='Телефон клиента')
+    
+    # Связь с услугой
+    service = models.ForeignKey(Service, on_delete=models.PROTECT, related_name='orders', verbose_name='Услуга')
+    
+    # Даты
+    order_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата заказа')
+    shoot_date = models.DateField(verbose_name='Дата съемки')
+    
+    # Статус и сумма
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new', verbose_name='Статус')
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма')
+    
+    # Дополнительная информация
+    notes = models.TextField(blank=True, verbose_name='Комментарий клиента')
+    
+    class Meta:
+        ordering = ['-order_date']  # Сортировка: новые сверху
+        verbose_name = 'Заказ'
+        verbose_name_plural = 'Заказы'
+    
+    def __str__(self):
+        return f'Заказ #{self.id} от {self.client_name} - {self.get_status_display()}'
 # Create your models here.

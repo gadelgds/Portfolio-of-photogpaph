@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Photo, Service, Review, Category, Tag, PhotoLike
+from .models import Photo, Service, Review, Category, Tag, PhotoLike, Order
 
 # Регистрация Category
 @admin.register(Category)
@@ -36,6 +36,28 @@ class PhotoLikeAdmin(admin.ModelAdmin):
     list_filter = ['created_at']
     search_fields = ['ip_address', 'photo__title']
     readonly_fields = ['photo', 'ip_address', 'created_at']
+
+# Регистрация Order
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    """Настройка отображения заказов в админ-панели"""
+    list_display = ['id', 'client_name', 'service', 'shoot_date', 'status', 'total_amount', 'order_date']
+    list_filter = ['status', 'order_date', 'shoot_date']
+    search_fields = ['client_name', 'client_email', 'client_phone']
+    list_editable = ['status']  # Можно менять статус прямо в списке
+    readonly_fields = ['order_date', 'total_amount']
+    
+    fieldsets = (
+        ('Информация о клиенте', {
+            'fields': ('client_name', 'client_email', 'client_phone')
+        }),
+        ('Детали заказа', {
+            'fields': ('service', 'shoot_date', 'total_amount', 'status')
+        }),
+        ('Дополнительно', {
+            'fields': ('notes', 'order_date')
+        }),
+    )
 
 # Расширенная регистрация Review с дополнительными возможностями
 @admin.register(Review)
