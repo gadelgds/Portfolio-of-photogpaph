@@ -31,6 +31,13 @@
         <a href="{% url 'services' %}">Услуги и цены</a>
         <a href="{% url 'reviews' %}">Отзывы</a>
         <a href="{% url 'contact' %}">Контакты</a>
+        
+        {% if user.is_authenticated %}
+            <a href="{% url 'logout' %}" style="margin-left: auto;">Выход ({{ user.username }})</a>
+        {% else %}
+            <a href="{% url 'login' %}" style="margin-left: auto;">Вход</a>
+            <a href="{% url 'register' %}">Регистрация</a>
+        {% endif %}
     </div>
 
     <!-- Основное содержимое -->

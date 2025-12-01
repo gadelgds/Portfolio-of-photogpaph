@@ -1,0 +1,67 @@
+{% extends 'game/base.html' %}
+
+{% block content %}
+<h2>Регистрация</h2>
+<p>Создайте аккаунт для доступа ко всем возможностям сайта</p>
+
+<div class="order-form-box">
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label class="form-label">{{ form.username.label }}</label>
+            {{ form.username }}
+            {% if form.username.errors %}
+                <div class="form-error">{{ form.username.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">{{ form.email.label }}</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <div class="form-error">{{ form.email.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">{{ form.phone.label }}</label>
+            {{ form.phone }}
+            {% if form.phone.errors %}
+                <div class="form-error">{{ form.phone.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">{{ form.password1.label }}</label>
+            {{ form.password1 }}
+            {% if form.password1.errors %}
+                <div class="form-error">{{ form.password1.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">{{ form.password2.label }}</label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}
+                <div class="form-error">{{ form.password2.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="button submit-button">
+                Зарегистрироваться
+            </button>
+            <a href="{% url 'login' %}" class="button cancel-button">
+                Уже есть аккаунт?
+            </a>
+        </div>
+    </form>
+</div>
+
+<div class="info-box">
+    <p>
+        <strong>Преимущества регистрации:</strong> Возможность оставлять комментарии, сохранять избранные фотографии и получать уведомления о новых работах.
+    </p>
+</div>
+{% endblock %}

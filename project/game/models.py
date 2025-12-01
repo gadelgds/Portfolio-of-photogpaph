@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Category(models.Model):
     """Категории для фотографий (портрет, пейзаж, свадьба и т.д.)"""
@@ -123,4 +126,27 @@ class Order(models.Model):
     
     def __str__(self):
         return f'Заказ #{self.id} от {self.client_name} - {self.get_status_display()}'
-# Create your models here.
+
+class UserProfile(models.Model):
+    """Расширенный профиль пользователя"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    phone = models.CharField(max_length=20, blank=True, verbose_name='Телефон')
+    
+    class Meta:
+        verbose_name = 'Профиль пользователя'
+        verbose_name_plural = 'Профили пользователей'
+    
+    def __str__(self):
+        return f'Профиль {self.user.username}'
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    """Автоматически создаем профиль при создании пользователя"""
+    if created:
+        UserProfile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    """Сохраняем профиль при сохранении пользователя"""
+    if hasattr(instance, 'profile'):
+        instance.profile.save()

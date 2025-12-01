@@ -1,8 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from .models import Photo, Service, Review, PhotoLike, Category, Order
-from .forms import ReviewForm, OrderForm
+from .forms import ReviewForm, OrderForm, RegisterForm, LoginForm
 
 def home(request):
     # Получаем все категории для фильтра
@@ -50,13 +52,19 @@ def photo_detail(request, photo_id):
             review.save()
             
             # Показываем сообщение пользователю
-            messages.success(request, '💬 Спасибо за комментарий! Он появится после модерации.')
+            messages.success(request, 'Спасибо за комментарий! Он появится после модерации.')
             
             # Перенаправляем на эту же страницу (чтобы форма очистилась)
             return redirect('photo_detail', photo_id=photo_id)
     else:
-        # Если GET запрос - просто показываем пустую форму
-        form = ReviewForm()
+        # Автозаполнение для авторизованных пользователей
+        initial_data = {}
+        if request.user.is_authenticated:
+            initial_data = {
+                'author_name': request.user.username,
+                'email': request.user.email,
+            }
+        form = ReviewForm(initial=initial_data)
     
     context = {
         'photo': photo,
@@ -93,8 +101,14 @@ def reviews(request):
             # Перенаправляем на эту же страницу (чтобы форма очистилась)
             return redirect('reviews')
     else:
-        # Если GET запрос - просто показываем пустую форму
-        form = ReviewForm()
+        # Автозаполнение для авторизованных пользователей
+        initial_data = {}
+        if request.user.is_authenticated:
+            initial_data = {
+                'author_name': request.user.username,
+                'email': request.user.email,
+            }
+        form = ReviewForm(initial=initial_data)
     
     # Передаем данные в шаблон
     context = {
@@ -161,16 +175,80 @@ def create_order(request, service_id):
             order.save()
             
             # Показываем сообщение пользователю
-            messages.success(request, f'✅ Заказ #{order.id} успешно создан! Мы свяжемся с вами в ближайшее время.')
+            messages.success(request, f'Заказ #{order.id} успешно создан! Мы свяжемся с вами в ближайшее время.')
             
             # Перенаправляем на страницу услуг
             return redirect('services')
     else:
-        # Если GET запрос - просто показываем пустую форму
-        form = OrderForm()
+        # Автозаполнение для авторизованных пользователей
+        initial_data = {}
+        if request.user.is_authenticated:
+            initial_data = {
+                'client_name': request.user.username,
+                'client_email': request.user.email,
+            }
+            # Добавляем телефон если есть
+            if hasattr(request.user, 'profile') and request.user.profile.phone:
+                initial_data['client_phone'] = request.user.profile.phone
+        form = OrderForm(initial=initial_data)
     
     context = {
         'form': form,
         'service': service
     }
     return render(request, 'game/create_order.html', context)
+
+def register(request):
+    """
+    Регистрация нового пользователя
+    """
+    if request.user.is_authenticated:
+        return redirect('home')
+    
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # Сохраняем телефон в профиль
+            phone = form.cleaned_data.get('phone')
+            if phone:
+                user.profile.phone = phone
+                user.profile.save()
+            # Автоматически входим после регистрации
+            login(request, user)
+            messages.success(request, f'Добро пожаловать, {user.username}! Вы успешно зарегистрированы.')
+            return redirect('home')
+    else:
+        form = RegisterForm()
+    
+    return render(request, 'game/register.html', {'form': form})
+
+def user_login(request):
+    """
+    Вход пользователя
+    """
+    if request.user.is_authenticated:
+        return redirect('home')
+    
+    if request.method == 'POST':
+        form = LoginForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, f'Добро пожаловать, {username}!')
+                return redirect('home')
+    else:
+        form = LoginForm()
+    
+    return render(request, 'game/login.html', {'form': form})
+
+def user_logout(request):
+    """
+    Выход пользователя
+    """
+    logout(request)
+    messages.success(request, 'Вы успешно вышли из системы.')
+    return redirect('home')

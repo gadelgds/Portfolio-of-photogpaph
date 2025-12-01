@@ -1,0 +1,41 @@
+{% extends 'game/base.html' %}
+
+{% block content %}
+<h2>Вход</h2>
+<p>Войдите в свой аккаунт</p>
+
+<div class="order-form-box">
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label class="form-label">{{ form.username.label }}</label>
+            {{ form.username }}
+            {% if form.username.errors %}
+                <div class="form-error">{{ form.username.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">{{ form.password.label }}</label>
+            {{ form.password }}
+            {% if form.password.errors %}
+                <div class="form-error">{{ form.password.errors }}</div>
+            {% endif %}
+        </div>
+        
+        {% if form.non_field_errors %}
+            <div class="form-error">{{ form.non_field_errors }}</div>
+        {% endif %}
+        
+        <div class="form-actions">
+            <button type="submit" class="button submit-button">
+                Войти
+            </button>
+            <a href="{% url 'register' %}" class="button cancel-button">
+                Создать аккаунт
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

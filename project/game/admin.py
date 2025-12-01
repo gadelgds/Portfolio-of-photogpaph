@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Photo, Service, Review, Category, Tag, PhotoLike, Order
+from .models import Photo, Service, Review, Category, Tag, PhotoLike, Order, UserProfile
 
 # Регистрация Category
 @admin.register(Category)
@@ -81,4 +81,10 @@ class ReviewAdmin(admin.ModelAdmin):
     
     # Сколько отзывов показывать на странице
     list_per_page = 20
-# Register your models here.
+
+# Регистрация UserProfile
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    """Настройка отображения профилей в админ-панели"""
+    list_display = ['user', 'phone']
+    search_fields = ['user__username', 'phone']
