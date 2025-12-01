@@ -41,9 +41,9 @@ class PhotoLikeAdmin(admin.ModelAdmin):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     """Настройка отображения заказов в админ-панели"""
-    list_display = ['id', 'client_name', 'service', 'shoot_date', 'status', 'total_amount', 'order_date']
+    list_display = ['id', 'client_name', 'service', 'shoot_date', 'status', 'total_amount', 'order_date', 'notes']
     list_filter = ['status', 'order_date', 'shoot_date']
-    search_fields = ['client_name', 'client_email', 'client_phone']
+    search_fields = ['client_name', 'client_email', 'client_phone', 'notes']
     list_editable = ['status']  # Можно менять статус прямо в списке
     readonly_fields = ['order_date', 'total_amount']
     

@@ -8,24 +8,20 @@
 
     <!-- Подключение внешнего CSS файла -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-
-    <style>
-        /* Простые стили для новичка */
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-
-        
-    </style>
 </head>
+<body>
+    <!-- Модальное окно для полноразмерного изображения -->
+    <div id="imageModal" class="modal">
+        <span class="modal-close">&times;</span>
+        <div class="modal-wrapper">
+            <img class="modal-content" id="modalImage">
+            <div id="modalCaption"></div>
+        </div>
+    </div>
 <body>
     <!-- Шапка сайта -->
     <div class="header">
-        <h1>📷 Фотограф Гадель</h1>
+        <h1>Фотограф Гадель</h1>
         <p>Профессиональная фотосъемка в Москве</p>
     </div>
 
@@ -47,5 +43,45 @@
     <div class="footer">
         <p>© 2024 Фотограф Гадель. Телефон: +7 (999) 123-45-67</p>
     </div>
+
+    <script>
+        // Функция для открытия модального окна с полноразмерным изображением
+        function openImageModal(imageSrc, imageAlt) {
+            var modal = document.getElementById('imageModal');
+            var modalImg = document.getElementById('modalImage');
+            var captionText = document.getElementById('modalCaption');
+            
+            modal.style.display = 'flex';
+            modalImg.src = imageSrc;
+            captionText.innerHTML = imageAlt;
+        }
+
+        // Закрытие модального окна
+        document.addEventListener('DOMContentLoaded', function() {
+            var modal = document.getElementById('imageModal');
+            var closeBtn = document.querySelector('.modal-close');
+            
+            // Закрытие по клику на крестик
+            if (closeBtn) {
+                closeBtn.onclick = function() {
+                    modal.style.display = 'none';
+                }
+            }
+            
+            // Закрытие по клику вне изображения
+            modal.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            }
+            
+            // Закрытие по нажатию ESC
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </body>
 </html>

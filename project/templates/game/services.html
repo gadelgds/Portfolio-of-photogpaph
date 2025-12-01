@@ -1,32 +1,38 @@
 {% extends 'game/base.html' %}
 
 {% block content %}
-<h2>💼 Мои услуги</h2>
+<h2>Мои услуги</h2>
 <p>Выберите подходящий вариант съемки</p>
 
 {% if messages %}
-<div style="margin: 20px 0;">
+<div class="messages-container">
     {% for message in messages %}
-    <div style="padding: 15px; background: {% if message.tags == 'success' %}#d4edda{% else %}#fff3cd{% endif %}; border-radius: 5px; margin: 10px 0; border-left: 4px solid {% if message.tags == 'success' %}#28a745{% else %}#ffc107{% endif %};">
+    <div class="message {% if message.tags == 'success' %}message-success{% else %}message-warning{% endif %}">
         {{ message }}
     </div>
     {% endfor %}
 </div>
 {% endif %}
 
+<div class="info-box">
+    <p>
+        <strong>Индивидуальный заказ:</strong> Если вы хотите индивидуальный заказ со своими критериями, то переходите в раздел <a href="{% url 'contact' %}">контакты</a> и звоните лично по номеру телефона.
+    </p>
+</div>
+
 {% for service in services %}
 <div class="service-card">
     <h3>{{ service.name }}</h3>
     <p>{{ service.description }}</p>
     <div class="price">{{ service.price }} руб.</div>
-    <a href="{% url 'create_order' service.id %}" class="button" style="display: inline-block; text-decoration: none;">
-        📅 Заказать услугу
+    <a href="{% url 'create_order' service.id %}" class="button">
+        Заказать услугу
     </a>
 </div>
 {% endfor %}
 
-<div style="background: #e8f4f8; padding: 20px; border-radius: 8px; margin-top: 30px;">
-    <h3>📞 Как работает заказ?</h3>
+<div class="instructions-box">
+    <h3>Как работает заказ?</h3>
     <ol>
         <li>Нажмите кнопку "Заказать услугу" возле нужной услуги</li>
         <li>Заполните форму с вашими контактами и желаемой датой</li>
